@@ -1,0 +1,161 @@
+<div class="space-y-6">
+  <!-- Header Section -->
+  <div class="flex justify-between items-center">
+    <div>
+      <h1 class="text-3xl font-bold text-gray-900">Grafana - Monitoreo</h1>
+      <p class="text-gray-600 mt-1">Dashboards y métricas de rendimiento</p>
+    </div>
+    <div class="flex space-x-4">
+      <button 
+        (click)="refreshDashboards()"
+        class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition-colors duration-200 flex items-center space-x-2">
+        <lucide-icon name="trending-up" class="w-4 h-4"></lucide-icon>
+        <span>Actualizar</span>
+      </button>
+      <button 
+        (click)="openGrafana()"
+        class="bg-primary-600 text-white px-4 py-2 rounded-lg hover:bg-primary-700 transition-colors duration-200 flex items-center space-x-2">
+        <lucide-icon name="external-link" class="w-4 h-4"></lucide-icon>
+        <span>Abrir Grafana</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Quick Stats -->
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600">Dashboards Activos</p>
+          <p class="text-2xl font-bold text-gray-900">{{ getActiveDashboardsCount() }}</p>
+        </div>
+        <lucide-icon name="bar-chart-3" class="w-8 h-8 text-blue-600"></lucide-icon>
+      </div>
+    </div>
+    
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600">Total Paneles</p>
+          <p class="text-2xl font-bold text-gray-900">{{ getTotalPanels() }}</p>
+        </div>
+        <lucide-icon name="activity" class="w-8 h-8 text-green-600"></lucide-icon>
+      </div>
+    </div>
+    
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600">Alertas Configuradas</p>
+          <p class="text-2xl font-bold text-gray-900">24</p>
+        </div>
+        <lucide-icon name="alert-triangle" class="w-8 h-8 text-yellow-600"></lucide-icon>
+      </div>
+    </div>
+    
+    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-600">Retención de Datos</p>
+          <p class="text-2xl font-bold text-gray-900">30d</p>
+        </div>
+        <lucide-icon name="database" class="w-8 h-8 text-purple-600"></lucide-icon>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dashboards Grid -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="p-6 border-b border-gray-200">
+      <h2 class="text-xl font-bold text-gray-900">Dashboards Disponibles</h2>
+    </div>
+    
+    <div class="p-6">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div 
+          *ngFor="let dashboard of dashboards" 
+          class="border border-gray-200 rounded-lg p-6 hover:shadow-md transition-all duration-200 cursor-pointer"
+          (click)="openDashboard(dashboard.id)">
+          
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center space-x-3">
+              <div class="p-2 bg-blue-50 rounded-lg">
+                <lucide-icon name="bar-chart-3" class="w-6 h-6 text-blue-600"></lucide-icon>
+              </div>
+              <div>
+                <h3 class="font-semibold text-gray-900">{{ dashboard.name }}</h3>
+                <div class="flex items-center space-x-2 mt-1">
+                  <span 
+                    [class]="dashboard.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'"
+                    class="px-2 py-1 text-xs font-medium rounded-full">
+                    {{ dashboard.status === 'active' ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </div>
+              </div>
+            </div>
+            <lucide-icon name="external-link" class="w-4 h-4 text-gray-400"></lucide-icon>
+          </div>
+          
+          <p class="text-sm text-gray-600 mb-4">{{ dashboard.description }}</p>
+          
+          <div class="flex items-center justify-between text-sm text-gray-500">
+            <span>{{ dashboard.panels }} paneles</span>
+            <span>Actualizado {{ dashboard.lastUpdated }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Embedded Dashboard Preview -->
+  <div class="bg-white rounded-lg shadow-sm border border-gray-200">
+    <div class="p-6 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-gray-900">Vista Previa - Sistema General</h2>
+        <button 
+          (click)="openDashboard('system-overview')"
+          class="text-primary-600 hover:text-primary-800 text-sm font-medium flex items-center space-x-1">
+          <span>Ver completo</span>
+          <lucide-icon name="external-link" class="w-4 h-4"></lucide-icon>
+        </button>
+      </div>
+    </div>
+    
+    <div class="p-6">
+      <!-- Aquí irían los gráficos embebidos de Grafana -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="h-64 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg flex items-center justify-center border-2 border-dashed border-blue-200">
+          <div class="text-center">
+            <lucide-icon name="bar-chart-3" class="w-12 h-12 text-blue-400 mx-auto mb-2"></lucide-icon>
+            <p class="text-blue-600 font-medium">CPU Usage Over Time</p>
+            <p class="text-blue-500 text-sm">Panel de Grafana aquí</p>
+          </div>
+        </div>
+        
+        <div class="h-64 bg-gradient-to-br from-green-50 to-green-100 rounded-lg flex items-center justify-center border-2 border-dashed border-green-200">
+          <div class="text-center">
+            <lucide-icon name="activity" class="w-12 h-12 text-green-400 mx-auto mb-2"></lucide-icon>
+            <p class="text-green-600 font-medium">Memory Usage</p>
+            <p class="text-green-500 text-sm">Panel de Grafana aquí</p>
+          </div>
+        </div>
+        
+        <div class="h-64 bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg flex items-center justify-center border-2 border-dashed border-purple-200">
+          <div class="text-center">
+            <lucide-icon name="network" class="w-12 h-12 text-purple-400 mx-auto mb-2"></lucide-icon>
+            <p class="text-purple-600 font-medium">Network Traffic</p>
+            <p class="text-purple-500 text-sm">Panel de Grafana aquí</p>
+          </div>
+        </div>
+        
+        <div class="h-64 bg-gradient-to-br from-yellow-50 to-yellow-100 rounded-lg flex items-center justify-center border-2 border-dashed border-yellow-200">
+          <div class="text-center">
+            <lucide-icon name="database" class="w-12 h-12 text-yellow-400 mx-auto mb-2"></lucide-icon>
+            <p class="text-yellow-600 font-medium">Database Performance</p>
+            <p class="text-yellow-500 text-sm">Panel de Grafana aquí</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
