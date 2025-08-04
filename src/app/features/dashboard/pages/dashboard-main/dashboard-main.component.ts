@@ -41,28 +41,28 @@ export class DashboardMainComponent implements OnInit {
         },
         consul: {
           name: 'Consul',
-          url: 'http://apilink-consul.com:8500',
+          url: 'http://10.172.13.72:8500/ui/dc1/services/ApiLink/instances',
           description: 'Service discovery ApiLink'
         },
         vault: {
           name: 'Vault',
-          url: 'http://apilink-vault.com:8200',
+          url: 'http://	10.172.13.76:8200',
           description: 'Gestión de secretos ApiLink'
         },
-        jenkins: {
-          name: 'Jenkins',
-          url: 'http://apilink-jenkins.com:8080',
-          description: 'CI/CD Pipeline ApiLink'
+        HealthCheck: {
+          name: 'Healt Check',
+          url: 'http://10.172.13.71:7209/health-ui',
+          description: 'Health Check ApiLink'
         },
         kubernetes: {
           name: 'Kubernetes Dashboard',
-          url: 'http://apilink-k8s.com',
+          url: '10.172.13.33/',
           description: 'Cluster Kubernetes ApiLink'
         },
-        prometheus: {
-          name: 'Prometheus',
-          url: 'http://apilink-prometheus.com:9090',
-          description: 'Métricas ApiLink'
+        portalLink: {
+          name: 'portalLink',
+          url: 'http://10.172.13.77',
+          description: 'portalLink'
         }
       }
     },
