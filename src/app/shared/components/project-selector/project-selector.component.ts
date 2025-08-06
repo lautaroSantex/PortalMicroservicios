@@ -56,23 +56,6 @@ import { fadeInAnimation } from '../../../../fade-in.animation';
                 <p class="text-sm text-gray-500">{{ project.description }}</p>
               </div>
 
-              <!-- Status Indicator -->
-              <div class="absolute top-2 right-2">
-                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium"
-                      [ngClass]="{
-                        'bg-green-100 text-green-800': project.status === 'active',
-                        'bg-yellow-100 text-yellow-800': project.status === 'maintenance',
-                        'bg-red-100 text-red-800': project.status === 'inactive'
-                      }">
-                  <span class="w-2 h-2 rounded-full mr-1"
-                        [ngClass]="{
-                          'bg-green-500': project.status === 'active',
-                          'bg-yellow-500': project.status === 'maintenance',
-                          'bg-red-500': project.status === 'inactive'
-                        }"></span>
-                  {{ getStatusText(project.status) }}
-                </span>
-              </div>
             </button>
           </div>
 

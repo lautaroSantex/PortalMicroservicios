@@ -28,9 +28,9 @@ export class HeaderComponent implements OnInit, OnDestroy {
     if (!this.currentUser) {
       this.currentUser = {
         id: '1',
-        name: 'Admin Dev',
+        name: 'Ruizla',
         email: 'admin@empresa.com',
-        role: 'Administrador'
+        role: 'Operador',
       };
     }
 

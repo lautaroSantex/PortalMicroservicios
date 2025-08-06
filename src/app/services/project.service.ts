@@ -161,10 +161,10 @@ export class ProjectService {
       }
     },
     {
-      key: 'notifications',
-      name: 'Notifications Service',
-      description: 'Sistema de notificaciones y mensajería',
-      icon: '📧',
+      key: 'BCRA',
+      name: 'Coneciones BCRA',
+      description: 'Conexiones con el Banco Central de la República Argentina',
+      icon: '🏦',
       status: 'active',
       tools: {
         grafana: {
