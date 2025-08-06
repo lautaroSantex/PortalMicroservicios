@@ -1,9 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 import { Project, Tool } from '../../../models/project.model';
 import { ProjectService } from '../../../services/project.service';
-
+import { EnvironmentService } from '../../../services/environment.service';
+import { Environment, EnvironmentConfig } from '../../../config/environment.config';
 
 @Component({
   selector: 'app-tools-grid',
@@ -11,52 +13,46 @@ import { ProjectService } from '../../../services/project.service';
   imports: [CommonModule],
   template: `
     <div class="fade-in">
-      <!-- Stats Cards - COMENTADO POR AHORA -->
-      <!-- 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white rounded-lg shadow p-6">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-gray-600">Uptime</p>
-              <p class="text-2xl font-bold" [class.text-green-600]="metrics?.uptime > 99">
-                {{ metrics?.uptime || 0 }}%
-              </p>
+      <!-- Environment Selector -->
+      <div class="mb-6 bg-white rounded-lg shadow p-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <h3 class="text-lg font-semibold text-gray-700">Entorno:</h3>
+            <div class="flex space-x-2">
+              <button 
+                *ngFor="let env of environments"
+                (click)="selectEnvironment(env.key)"
+                [class]="currentEnvironment === env.key ? 
+                  'ring-2 ring-offset-2 ring-blue-500 ' + env.badgeClass : 
+                  'bg-gray-100 text-gray-600 hover:bg-gray-200'"
+                class="px-4 py-2 rounded-lg font-medium transition-all duration-200 border">
+                <span class="mr-2">{{ getEnvironmentIcon(env.key) }}</span>
+                {{ env.name }}
+              </button>
             </div>
-            <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-              <span class="text-xl">✅</span>
-            </div>
+          </div>
+          
+          <!-- Environment Indicator -->
+          <div class="flex items-center space-x-2">
+            <span class="text-sm text-gray-500">Conectado a:</span>
+            <span [class]="getCurrentEnvironmentBadgeClass()"
+                  class="px-3 py-1 rounded-full font-semibold text-sm border">
+              {{ getCurrentEnvironmentName() | uppercase }}
+            </span>
           </div>
         </div>
 
-        <div class="bg-white rounded-lg shadow p-6">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-gray-600">Tiempo de Respuesta</p>
-              <p class="text-2xl font-bold" [class.text-yellow-600]="metrics?.responseTime > 100">
-                {{ metrics?.responseTime || 0 }}ms
-              </p>
-            </div>
-            <div class="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-              <span class="text-xl">⚡</span>
-            </div>
-          </div>
-        </div>
-
-        <div class="bg-white rounded-lg shadow p-6">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-gray-600">Tasa de Error</p>
-              <p class="text-2xl font-bold" [class.text-red-600]="metrics?.errorRate > 1">
-                {{ metrics?.errorRate || 0 }}%
-              </p>
-            </div>
-            <div class="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center">
-              <span class="text-xl">⚠️</span>
-            </div>
-          </div>
+        <!-- Warning for Production -->
+        <div *ngIf="currentEnvironment === 'prod'" 
+             class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center">
+          <svg class="w-5 h-5 text-red-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+          </svg>
+          <span class="text-red-800 text-sm">
+            <strong>¡Atención!</strong> Estás en el entorno de PRODUCCIÓN. Los cambios afectarán a los usuarios finales.
+          </span>
         </div>
       </div>
-      -->
 
       <!-- Tools Categories -->
       <div class="mb-6">
@@ -79,8 +75,16 @@ import { ProjectService } from '../../../services/project.service';
         <div 
           *ngFor="let tool of getFilteredTools()"
           class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 
-                 transform hover:-translate-y-1 cursor-pointer group"
+                 transform hover:-translate-y-1 cursor-pointer group relative"
           (click)="openTool(tool.key)">
+          
+          <!-- Environment Badge on Card -->
+          <div class="absolute top-2 right-2 z-10">
+            <span [class]="getCurrentEnvironmentBadgeClass()"
+                  class="px-2 py-1 rounded-full text-xs font-semibold border">
+              {{ currentEnvironment | uppercase }}
+            </span>
+          </div>
           
           <div class="p-8">
             <!-- Tool Header -->
@@ -90,11 +94,6 @@ import { ProjectService } from '../../../services/project.service';
                 <span class="text-3xl">{{ getToolIcon(tool.key) }}</span>
               </div>
               
-              <!-- Status Indicator -->
-              <div class="flex items-center space-x-1">
-                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span class="text-xs text-gray-500">Online</span>
-              </div>
             </div>
 
             <!-- Tool Info -->
@@ -110,7 +109,7 @@ import { ProjectService } from '../../../services/project.service';
               </span>
               
               <button 
-                (click)="openToolInNewTab($event, tool.value.url)"
+                (click)="openToolInNewTab($event, tool.key)"
                 class="text-blue-600 hover:text-blue-700 flex items-center space-x-1">
                 <span>Abrir externo</span>
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -119,11 +118,20 @@ import { ProjectService } from '../../../services/project.service';
                 </svg>
               </button>
             </div>
+
+            <!-- URL Preview (solo visible para debugging - comentar en producción) -->
+            <!--
+            <div class="mt-2 pt-2 border-t">
+              <p class="text-xs text-gray-400 truncate" [title]="getToolUrl(tool.key)">
+                {{ getToolUrl(tool.key) }}
+              </p>
+            </div>
+            -->
           </div>
 
-          <!-- Hover Effect Bar -->
-          <div class="h-1 bg-gradient-to-r from-blue-500 to-purple-500 transform scale-x-0 
-                      group-hover:scale-x-100 transition-transform duration-300"></div>
+          <!-- Hover Effect Bar with Environment Color -->
+          <div class="h-1 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"
+               [style.background]="'linear-gradient(to right, ' + getEnvironmentGradient() + ')'"></div>
         </div>
       </div>
 
@@ -159,14 +167,13 @@ import { ProjectService } from '../../../services/project.service';
     }
   `]
 })
-export class ToolsGridComponent implements OnInit {
+export class ToolsGridComponent implements OnInit, OnDestroy {
   currentProject: Project | null = null;
   tools: Array<{key: string, value: Tool}> = [];
-  
-  // Métricas comentadas por ahora - descomentar cuando se necesiten
-  // metrics: any = null;
-  
   selectedCategory: string = 'all';
+  currentEnvironment: Environment = 'qa';
+  environments: EnvironmentConfig[] = [];
+  private destroy$ = new Subject<void>();
 
   categories = [
     { key: 'all', name: 'Todas' },
@@ -179,7 +186,8 @@ export class ToolsGridComponent implements OnInit {
   constructor(
     private router: Router,
     private route: ActivatedRoute,
-    private projectService: ProjectService
+    private projectService: ProjectService,
+    private environmentService: EnvironmentService
   ) {}
 
   ngOnInit(): void {
@@ -188,6 +196,21 @@ export class ToolsGridComponent implements OnInit {
     if (projectId) {
       this.loadProject(projectId);
     }
+
+    // Cargar entornos disponibles
+    this.environments = this.environmentService.getAvailableEnvironments();
+    
+    // Suscribirse a cambios de entorno
+    this.environmentService.currentEnvironment$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(env => {
+        this.currentEnvironment = env;
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   private loadProject(projectId: string): void {
@@ -199,10 +222,11 @@ export class ToolsGridComponent implements OnInit {
         key,
         value
       }));
-      
-      // Cargar métricas - comentado por ahora
-      // this.metrics = this.currentProject.metrics;
     }
+  }
+
+  selectEnvironment(env: Environment): void {
+    this.environmentService.setEnvironment(env);
   }
 
   getFilteredTools(): Array<{key: string, value: Tool}> {
@@ -220,32 +244,48 @@ export class ToolsGridComponent implements OnInit {
   }
 
   openTool(toolKey: string): void {
-    // Por ahora, abrir directamente la URL externa
-    const tool = this.tools.find(t => t.key === toolKey);
-    if (tool && tool.value.url) {
-      window.open(tool.value.url, '_blank', 'noopener,noreferrer');
+    const url = this.getToolUrl(toolKey);
+    if (url && url !== '#') {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    } else {
+      console.error(`URL no configurada para ${toolKey} en ${this.currentEnvironment}`);
+      alert(`URL no configurada para ${toolKey} en el entorno ${this.currentEnvironment}`);
     }
-    
-    // Código original comentado para uso futuro cuando quieras navegar internamente
-    // const route = this.getToolRoute(toolKey);
-    // this.router.navigate(['../', route], { relativeTo: this.route });
   }
 
-  openToolInNewTab(event: Event, url: string): void {
+  openToolInNewTab(event: Event, toolKey: string): void {
     event.stopPropagation();
-    window.open(url, '_blank', 'noopener,noreferrer');
+    this.openTool(toolKey);
   }
 
-  private getToolRoute(toolKey: string): string {
-    const routeMap: { [key: string]: string } = {
-      'grafana': 'grafana',
-      'consul': 'consul',
-      'vault': 'vault',
-      'healthCheck': 'health-check',
-      'kubernetes': 'kubernetes',
-      'portalLink': 'portal'
+  getToolUrl(toolKey: string): string {
+    if (!this.currentProject) return '#';
+    return this.environmentService.getToolUrl(this.currentProject.key, toolKey);
+  }
+
+  getCurrentEnvironmentName(): string {
+    const config = this.environmentService.getCurrentEnvironmentConfig();
+    return config?.name || 'Desconocido';
+  }
+
+  getCurrentEnvironmentBadgeClass(): string {
+    return this.environmentService.getEnvironmentBadgeClass();
+  }
+
+  getEnvironmentIcon(env: Environment): string {
+    const icons = {
+      'qa': '🧪',
+      'prod': '🚀'
     };
-    return routeMap[toolKey] || toolKey;
+    return icons[env] || '📦';
+  }
+
+  getEnvironmentGradient(): string {
+    const gradients = {
+      'qa': '#f59e0b, #ef4444',
+      'prod': '#ef4444, #dc2626'
+    };
+    return gradients[this.currentEnvironment] || '#6b7280, #4b5563';
   }
 
   getToolIcon(toolKey: string): string {
