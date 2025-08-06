@@ -6,10 +6,6 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
 
-// Importar servicios directamente
-import { ApiService } from './app/core/services/api.service';
-import { AuthService } from './app/core/services/auth.service';
-import { NotificationService } from './app/core/services/notification.service';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -18,8 +14,6 @@ bootstrapApplication(AppComponent, {
     provideHttpClient(),
     provideAnimations(),
     // Servicios
-    ApiService,
-    AuthService,
-    NotificationService
+
   ]
 }).catch(err => console.error(err));

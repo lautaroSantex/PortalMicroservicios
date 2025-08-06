@@ -1,7 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
-import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-header',
@@ -22,7 +21,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
   private subscriptions = new Subscription();
 
   constructor(
-    private authService: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -36,14 +34,6 @@ export class HeaderComponent implements OnInit, OnDestroy {
       };
     }
 
-    // Suscribirse al usuario actual si hay servicio de auth
-    this.subscriptions.add(
-      this.authService.currentUser$.subscribe(user => {
-        if (user) {
-          this.currentUser = user;
-        }
-      })
-    );
   }
 
   ngOnDestroy(): void {
@@ -54,10 +44,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
     this.toggleSidebar.emit();
   }
 
-  logout(): void {
-    this.authService.logout();
-    console.log('Cerrando sesión...');
-  }
+
 }
 
 // Exportación por defecto para asegurar compatibilidad
