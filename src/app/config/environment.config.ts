@@ -44,7 +44,7 @@ interface ToolUrlsConfig {
 export const TOOL_URLS: ToolUrlsConfig = {
   apilink: {
     qa: {
-      grafana: 'http://10.172.13.70:3000',  // QA Grafana
+      grafana: 'http://localhost:3000/d/dejzb58lqgfeoe/api-prueba?orgId=1&from=now%2Fy&to=now%2Fy&timezone=browser',  // QA Grafana
       consul: 'http://10.172.13.72:8500/ui/dc1/services/ApiLink/instances',  // QA Consul
       vault: 'http://10.172.13.76:8200',  // QA Vault
       healthCheck: 'http://10.172.13.71:7209/health-ui',  // QA Health Check
@@ -67,7 +67,7 @@ export const TOOL_URLS: ToolUrlsConfig = {
       vault: 'http://10.172.14.76:8200',
       healthCheck: 'http://10.172.14.71:8080/health-ui',
       kubernetes: 'http://10.172.14.33:8001',
-      portalLink: 'http://10.172.14.77:8080'
+      portalLink: 'https://azjudq001plan-app02.azurewebsites.net/auth/login'
     },
     prod: {
       grafana: 'http://10.172.14.80:3000',
@@ -75,7 +75,7 @@ export const TOOL_URLS: ToolUrlsConfig = {
       vault: 'http://10.172.14.76:8200',
       healthCheck: 'http://10.172.14.71:8080/health-ui',
       kubernetes: 'http://10.172.14.33',
-      portalLink: 'http://10.172.14.77'
+      portalLink: 'https://hbjudiciales.bpn.com.ar/auth/login?retUrl=%2F'
     }
   },
   renaper: {
@@ -96,14 +96,14 @@ export const TOOL_URLS: ToolUrlsConfig = {
       portalLink: 'http://10.172.15.77'
     }
   },
-  notifications: {
+  BCRA: {
     qa: {
       grafana: 'http://10.172.16.70:3000',  // Ajusta estas IPs según tu infraestructura
       consul: 'http://10.172.16.72:8500/ui/dc1/services/Notifications-QA/instances',
       vault: 'http://10.172.16.76:8200',
       healthCheck: 'http://10.172.16.71:8080/health-ui',
       kubernetes: 'http://10.172.16.33:8001',
-      portalLink: 'http://10.172.16.77:8080'
+      portalLink: 'https://pasesbancariosqa.ar.bpn/'
     },
     prod: {
       grafana: 'http://10.172.16.80:3000',

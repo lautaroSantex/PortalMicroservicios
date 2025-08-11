@@ -162,7 +162,7 @@ export class ProjectService {
     },
     {
       key: 'BCRA',
-      name: 'Coneciones BCRA',
+      name: 'Conexiones BCRA',
       description: 'Conexiones con el Banco Central de la República Argentina',
       icon: '🏦',
       status: 'active',
@@ -170,37 +170,37 @@ export class ProjectService {
         grafana: {
           name: 'Grafana',
           url: 'http://notifications-grafana.com:3000',
-          description: 'Dashboard de monitoreo Notifications',
+          description: 'Dashboard de monitoreo BCRA',
           category: 'monitoring'
         },
         consul: {
           name: 'Consul',
           url: 'http://notifications-consul.com:8500',
-          description: 'Service discovery Notifications',
+          description: 'Service discovery BCRA',
           category: 'infrastructure'
         },
         vault: {
           name: 'Vault',
           url: 'http://notifications-vault.com:8200',
-          description: 'Gestión de secretos Notifications',
+          description: 'Gestión de secretos BCRA',
           category: 'security'
         },
         healthCheck: {
           name: 'Health Check',
           url: 'http://notifications-jenkins.com:8080',
-          description: 'Health Check Notifications',
+          description: 'Health Check BCRA',
           category: 'monitoring'
         },
         kubernetes: {
           name: 'Kubernetes Dashboard',
           url: 'http://notifications-k8s.com',
-          description: 'Cluster Kubernetes Notifications',
+          description: 'Cluster Kubernetes BCRA',
           category: 'infrastructure'
         },
         portalLink: {
           name: 'Portal Notifications',
-          url: 'http://notifications-portal.com',
-          description: 'Portal Notifications',
+          url: 'hhttps://pasesbancarios.ar.bpn/',
+          description: 'Portal BCRA',
           category: 'application'
         }
       },

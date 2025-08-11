@@ -42,7 +42,7 @@ import { Environment, EnvironmentConfig } from '../../../config/environment.conf
           </div>
         </div>
 
-        <!-- Warning for Production -->
+        <!-- Warning for Production 
         <div *ngIf="currentEnvironment === 'prod'" 
              class="mt-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center">
           <svg class="w-5 h-5 text-red-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
@@ -51,7 +51,7 @@ import { Environment, EnvironmentConfig } from '../../../config/environment.conf
           <span class="text-red-800 text-sm">
             <strong>¡Atención!</strong> Estás en el entorno de PRODUCCIÓN. Los cambios afectarán a los usuarios finales.
           </span>
-        </div>
+        </div>-->
       </div>
 
       <!-- Tools Categories -->
