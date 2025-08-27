@@ -19,6 +19,8 @@
     "@angular/platform-browser": "^19.2.0",
     "@angular/platform-browser-dynamic": "^19.2.0",
     "@angular/router": "^19.2.0",
+    "angular-oauth2-oidc": "^17.0.2",
+    "angular-oauth2-oidc-jwks": "^17.0.2",
     "chart.js": "^4.4.9",
     "lucide-angular": "^0.511.0",
     "ng2-charts": "^8.0.0",

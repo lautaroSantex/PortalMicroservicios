@@ -1,7 +1,11 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
-import { provideHttpClient } from '@angular/common/http';
+// Importa 'withFetch' para la configuración moderna de HttpClient
+import { provideHttpClient, withFetch } from '@angular/common/http'; 
 import { provideAnimations } from '@angular/platform-browser/animations';
+
+// --- ¡ESTA ES LA LÍNEA QUE FALTA! ---
+import { provideOAuthClient } from 'angular-oauth2-oidc';
 
 import { AppComponent } from './app/app.component';
 import { routes } from './app/app.routes';
@@ -15,11 +19,13 @@ bootstrapApplication(AppComponent, {
   providers: [
     // Precarga inmediata de todas las rutas
     provideRouter(routes, withPreloading(PreloadAllModules)),
-    provideHttpClient(),
+    
+    // Configuración moderna de HttpClient
+    provideHttpClient(withFetch()), 
+    
     provideAnimations(),
-    // Servicios
-    ApiService,
-    AuthService,
-    NotificationService
+    
+    // --- ¡Y AQUÍ SE AÑADE EL PROVEEDOR! ---
+    provideOAuthClient()
   ]
 }).catch(err => console.error(err));

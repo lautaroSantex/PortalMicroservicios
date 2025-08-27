@@ -10,10 +10,13 @@ export const routes: Routes = [
     redirectTo: '/dashboard',
     pathMatch: 'full'
   },
+  
+  // Rutas protegidas
   {
     path: 'dashboard',
     component: DashboardMainComponent
   },
+  
   {
     path: 'grafana',
     component: GrafanaMainComponent
@@ -26,8 +29,12 @@ export const routes: Routes = [
     path: 'vault',
     component: VaultMainComponent
   },
+  
+  // Página de sin a
+  
+  // Ruta wildcard - debe ser la última
   {
     path: '**',
-    redirectTo: '/dashboard'
+    redirectTo: ''
   }
 ];

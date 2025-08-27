@@ -1,0 +1,20 @@
+{
+  "/connect": {
+    "target": "https://csbpnauthapidesa.ar.bpn",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/.well-known": {
+    "target": "https://csbpnauthapidesa.ar.bpn",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  },
+  "/Auth": {
+    "target": "https://csbpnauthapidesa.ar.bpn",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}
