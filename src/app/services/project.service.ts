@@ -1,6 +1,7 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Project, Tool } from '../models/project.model';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -8,6 +9,7 @@ import { Project, Tool } from '../models/project.model';
 export class ProjectService {
   private currentProjectSubject = new BehaviorSubject<Project | null>(null);
   public currentProject$ = this.currentProjectSubject.asObservable();
+  private authService = inject(AuthService);
 
   private projects: Project[] = [
     {
@@ -21,13 +23,15 @@ export class ProjectService {
           name: 'Grafana',
           url: 'http://apilink-grafana.com:3000',
           description: 'Dashboard de monitoreo ApiLink',
-          category: 'monitoring'
+          category: 'monitoring',
+          requiredGroup: 'Acceso VPN Tech'
         },
         consul: {
           name: 'Consul',
           url: 'http://10.172.13.72:8500/ui/dc1/services/ApiLink/instances',
           description: 'Service discovery ApiLink',
-          category: 'infrastructure'
+          category: 'infrastructure',
+          requiredGroup: 'Acceso VPN Tech'
         },
         vault: {
           name: 'Vault',
@@ -227,7 +231,15 @@ export class ProjectService {
    * Obtiene todos los proyectos
    */
   getAllProjects(): Project[] {
-    return this.projects;
+    return this.projects.filter(project => {
+      // Si un proyecto no tiene un 'requiredGroup', se asume que es visible
+      // para cualquier usuario autenticado.
+      if (!project.requiredGroup) {
+        return true;
+      }
+      // Si el proyecto SÍ requiere un grupo, usamos el método 'hasRole' del AuthService.
+      return this.authService.hasRole(project.requiredGroup);
+    });
   }
 
   /**
@@ -241,7 +253,9 @@ export class ProjectService {
    * Obtiene un proyecto por su ID
    */
   getProjectById(projectId: string): Project | null {
-    return this.projects.find(p => p.key === projectId) || null;
+    // Reutilizamos la lógica de filtrado para buscar solo dentro de los proyectos permitidos.
+    const allowedProjects = this.getAllProjects();
+    return allowedProjects.find(p => p.key === projectId) || null;
   }
 
   /**

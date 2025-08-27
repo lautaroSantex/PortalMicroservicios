@@ -54,7 +54,7 @@ export class AuthService {
       console.log('AuthService: Token recibido.');
       this.updateAuthState(true);
       // Redirigir al dashboard después de un login exitoso
-      this.router.navigate(['/dashboard']); 
+      this.router.navigate(['/projects']); 
     }
   }
   
@@ -68,30 +68,62 @@ export class AuthService {
     }
   }
 
-  private async loadUserProfileAndRoles(): Promise<void> {
-    // 1. Cargar el perfil del id_token
-    const claims = this.oauthService.getIdentityClaims();
-    this.userProfile.set(claims);
-    console.log('AuthService: Claims cargados:', claims);
 
-    // 2. Cargar los roles/grupos desde tu API
+// en auth.service.ts
+
+// en auth.service.ts
+
+// en auth.service.ts
+
+private async loadUserProfileAndRoles(): Promise<void> {
+    // Para este flujo, el id_token puede no estar presente o ser limitado.
+    // Nos enfocaremos en el access_token.
+    this.userProfile.set(this.oauthService.getIdentityClaims());
+    console.log('AuthService: Claims (si existen):', this.userProfile());
+
     try {
       const accessToken = this.oauthService.getAccessToken();
-      const headers = new HttpHeaders({ 'Authorization': `Bearer ${accessToken}` });
+      if (!accessToken) {
+        throw new Error("No se encontró el access_token.");
+      }
       
-      // Asumimos que el userId viene en los claims del token
-      const userId = claims['sub'] || claims['userId']; // 'sub' es el estándar, ajusta si es otro
+      const accessTokenPayload = this.decodeTokenPayload(accessToken);
+      console.log('CONTENIDO DEL ACCESS TOKEN:', accessTokenPayload);
+
+      // Extraemos el 'userId' del ACCESS TOKEN, como requiere tu flujo.
+      const userId = accessTokenPayload?.userId;
+      
       if (!userId) {
-        throw new Error("No se encontró el 'userId' en los claims del token.");
+        // Si el nombre del claim es otro, como 'sub', ajústalo aquí.
+        // const userId = accessTokenPayload?.sub; 
+        throw new Error("El claim 'userId' NO FUE ENCONTRADO dentro del access_token.");
       }
 
-      const roles = await firstValueFrom(this.http.get<GroupAD[]>(`/Auth/GetGroupsAdByUser?userId=${userId}`, { headers }));
+      const headers = new HttpHeaders({ 'Authorization': `Bearer ${accessToken}` });
+      // Construimos la URL con el userId, como requiere tu API.
+      const apiUrl = `/Auth/GetGroupsAdByUser?userId=${userId}`;
+      console.log(`AuthService: Realizando llamada a: ${apiUrl}`);
+      
+      const roles = await firstValueFrom(this.http.get<GroupAD[]>(apiUrl, { headers }));
+      
       this.userRoles.set(roles || []);
-      console.log('AuthService: Roles cargados desde la API:', roles);
+      console.log('AuthService: Roles cargados exitosamente desde la API:', roles);
 
     } catch (error) {
-      console.error('AuthService: Error cargando los roles del usuario.', error);
+      console.error('AuthService: Fallo en el proceso de carga de roles.', error);
       this.userRoles.set([]);
+    }
+}
+
+  // Asegúrate de que tu método decodeTokenPayload siga aquí
+  private decodeTokenPayload(token: string): any {
+    try {
+      const payload = token.split('.')[1];
+      const decodedPayload = atob(payload.replace(/-/g, '+').replace(/_/g, '/'));
+      return JSON.parse(decodedPayload);
+    } catch (e) {
+      console.error('Error al decodificar el token', e);
+      return null;
     }
   }
 

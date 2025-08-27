@@ -7,6 +7,7 @@ export interface Tool {
   category?: 'monitoring' | 'infrastructure' | 'security' | 'application' | 'other';
   icon?: string;
   status?: 'online' | 'offline' | 'maintenance';
+  requiredGroup?: string;
 }
 
 export interface Project {
@@ -20,6 +21,7 @@ export interface Project {
   tags?: string[];
   createdAt?: Date;
   updatedAt?: Date;
+  requiredGroup?: string;
 }
 
 export interface ProjectMetrics {
@@ -42,3 +44,4 @@ export interface QuickAction {
   icon: string;
   color?: string;
 }
+

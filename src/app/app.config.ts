@@ -1,7 +1,10 @@
+// en app.config.ts
+
 import { ApplicationConfig, importProvidersFrom } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient } from '@angular/common/http';
 import { OAuthModule } from 'angular-oauth2-oidc';
+import { provideAnimations } from '@angular/platform-browser/animations'; // <-- ¡ESTA LÍNEA FALTABA!
 
 import { routes } from './app.routes';
 
@@ -9,6 +12,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
     provideHttpClient(),
-    importProvidersFrom(OAuthModule.forRoot())
+    importProvidersFrom(OAuthModule.forRoot()),
+    provideAnimations() 
   ]
 };

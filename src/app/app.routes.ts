@@ -2,26 +2,35 @@ import { Routes } from '@angular/router';
 import { ProjectSelectorComponent } from './shared/components/project-selector/project-selector.component';
 import { ProjectDashboardComponent } from './shared/components/project-dashboard/project-dashboard.component';
 import { projectGuard } from './guards/project.guard';
-
+import { authGuard } from './guards/auth.guard';
+import { WelcomeComponent } from './shared/components/welcome.component';
 
 export const routes: Routes = [
  {
     path: '',
     redirectTo: 'projects',
     pathMatch: 'full'
-  },
-  
-  // Rutas protegidas
-  {
+ },
+ 
+ // --- 2. AÑADIMOS LA RUTA PÚBLICA DE BIENVENIDA ---
+ {
+    path: 'welcome',
+    component: WelcomeComponent,
+    title: 'Bienvenido'
+ },
+
+ // --- RUTAS PROTEGIDAS ---
+ {
     path: 'projects',
     component: ProjectSelectorComponent,
-    title: 'Seleccionar Proyecto'
-  },
-  
-  {
+    title: 'Seleccionar Proyecto',
+    canActivate: [authGuard] 
+ },
+ 
+ {
     path: 'project/:projectId',
     component: ProjectDashboardComponent,
-    canActivate: [projectGuard],
+    canActivate: [authGuard, projectGuard], 
     title: 'Dashboard del Proyecto',
     children: [
       {
@@ -34,6 +43,7 @@ export const routes: Routes = [
         loadComponent: () => import('./shared/components/tools-grid/tools-grid.component')
           .then(m => m.ToolsGridComponent)
       },
+      // ... tus otras rutas hijas ...
       {
         path: 'grafana',
         loadComponent: () => import('./shared/components/tool-frame/tool-frame.component')
@@ -71,12 +81,11 @@ export const routes: Routes = [
         data: { tool: 'portalLink' }
       }
     ]
-  },
-  
-  
-  // Ruta wildcard - debe ser la última
-  {
+ },
+ 
+ // Ruta wildcard - debe ser la última
+ {
     path: '**',
     redirectTo: 'projects'
-  }
+ }
 ];

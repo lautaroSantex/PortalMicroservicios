@@ -202,6 +202,7 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy {
   ];
  */
   availableTools: any[] = [];
+  authService: any;
 
   constructor(
     private router: Router,
@@ -233,21 +234,33 @@ export class ProjectDashboardComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
+
   private loadProject(projectId: string): void {
+    // getProjectById ahora es seguro y solo devolverá el proyecto si tenemos acceso.
     this.currentProject = this.projectService.getProjectById(projectId);
     
     if (!this.currentProject) {
-      console.error(`Proyecto no encontrado: ${projectId}`);
-      this.router.navigate(['/projects']);
+      console.error(`Acceso denegado o proyecto no encontrado: ${projectId}`);
+      this.router.navigate(['/projects']); // Lo enviamos de vuelta al selector.
       return;
     }
 
-    // Configurar herramientas disponibles
-    this.availableTools = Object.entries(this.currentProject.tools).map(([key, tool]) => ({
-      route: this.getToolRoute(key),
-      name: tool.name,
-      icon: this.getToolIcon(key)
-    }));
+    // --- ¡FILTRADO DE HERRAMIENTAS ACTIVADO! ---
+    this.availableTools = Object.entries(this.currentProject.tools)
+      .map(([key, tool]: [string, any]) => ({
+        key: key,
+        route: this.getToolRoute(key),
+        name: tool.name,
+        icon: this.getToolIcon(key),
+        requiredGroup: tool.requiredGroup // Leemos el grupo requerido de la herramienta
+      }))
+      .filter(tool => {
+        // Misma lógica: si no requiere grupo, se muestra. Si lo requiere, se valida.
+        if (!tool.requiredGroup) {
+          return true;
+        }
+        return this.authService.hasRole(tool.requiredGroup);
+      });
   }
 
   goBack(): void {
