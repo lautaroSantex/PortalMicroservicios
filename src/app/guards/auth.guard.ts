@@ -1,23 +1,22 @@
 import { inject } from '@angular/core';
-import { CanActivateFn } from '@angular/router';
-import { AuthService } from '../services/auth.service'; // Asegúrate que la ruta sea correcta
+import { CanActivateFn, Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 import { filter, map, take } from 'rxjs/operators';
-import { toObservable } from '@angular/core/rxjs-interop';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
+  const router = inject(Router);
 
-  // Esperamos a que el servicio se inicialice antes de tomar una decisión
-  return toObservable(authService.isInitialized).pipe(
-    filter(isInitialized => isInitialized), // Espera a que sea true
-    take(1), // Toma solo el primer valor true
-    map(() => {
-      if (authService.isAuthenticated()) {
-        return true; // Si está autenticado, permite el acceso
-      } else {
-        authService.login(); // Si no, inicia el login
-        return false;
-      }
-    })
-  );
+  // Si el usuario ya está autenticado, permite el acceso
+  if (authService.isAuthenticated()) {
+    return true;
+  }
+  
+  // Si no está autenticado, inicia el flujo de login
+  // Importante: No podemos simplemente llamar a login() aquí porque causa un bucle.
+  // La redirección al IdP la manejará la librería o una acción del usuario.
+  // Lo correcto es redirigir a una página pública de login/bienvenida.
+  console.log('AuthGuard: Usuario no autenticado. Redirigiendo a /welcome.');
+  router.navigate(['/welcome']);
+  return false;
 };
