@@ -29,7 +29,17 @@ export class AuthService {
   // --- SEÑALES COMPUTADAS (Derivadas del estado) ---
   public username = computed(() => {
     const profile = this.userProfile();
-    return profile?.name || profile?.preferred_username || 'Usuario';
+    return profile?.family_name || profile?.name || profile?.preferred_username || 'Usuario';
+  });
+
+  public userEmail = computed(() => {
+    const profile = this.userProfile();
+    return profile?.email || '';
+  });
+
+  public userId = computed(() => {
+    const profile = this.userProfile();
+    return profile?.userId || profile?.sub || '';
   });
 
   constructor() {
@@ -45,19 +55,19 @@ export class AuthService {
         this.updateAuthState(true);
       }
     }).finally(() => {
-        this.isInitialized.set(true);
+      this.isInitialized.set(true);
     });
   }
-  
+
   private handleAuthEvents(event: OAuthEvent) {
     if (event.type === 'token_received') {
       console.log('AuthService: Token recibido.');
       this.updateAuthState(true);
       // Redirigir al dashboard después de un login exitoso
-      this.router.navigate(['/projects']); 
+      this.router.navigate(['/projects']);
     }
   }
-  
+
   private async updateAuthState(isAuthenticated: boolean) {
     this.isAuthenticated.set(isAuthenticated);
     if (isAuthenticated) {
@@ -69,13 +79,13 @@ export class AuthService {
   }
 
 
-// en auth.service.ts
+  // en auth.service.ts
 
-// en auth.service.ts
+  // en auth.service.ts
 
-// en auth.service.ts
+  // en auth.service.ts
 
-private async loadUserProfileAndRoles(): Promise<void> {
+  private async loadUserProfileAndRoles(): Promise<void> {
     // Para este flujo, el id_token puede no estar presente o ser limitado.
     // Nos enfocaremos en el access_token.
     this.userProfile.set(this.oauthService.getIdentityClaims());
@@ -86,13 +96,15 @@ private async loadUserProfileAndRoles(): Promise<void> {
       if (!accessToken) {
         throw new Error("No se encontró el access_token.");
       }
-      
+
       const accessTokenPayload = this.decodeTokenPayload(accessToken);
       console.log('CONTENIDO DEL ACCESS TOKEN:', accessTokenPayload);
 
+       this.userProfile.set(accessTokenPayload);
+
       // Extraemos el 'userId' del ACCESS TOKEN, como requiere tu flujo.
       const userId = accessTokenPayload?.userId;
-      
+
       if (!userId) {
         // Si el nombre del claim es otro, como 'sub', ajústalo aquí.
         // const userId = accessTokenPayload?.sub; 
@@ -103,9 +115,9 @@ private async loadUserProfileAndRoles(): Promise<void> {
       // Construimos la URL con el userId, como requiere tu API.
       const apiUrl = `/Auth/GetGroupsAdByUser?userId=${userId}`;
       console.log(`AuthService: Realizando llamada a: ${apiUrl}`);
-      
+
       const roles = await firstValueFrom(this.http.get<GroupAD[]>(apiUrl, { headers }));
-      
+
       this.userRoles.set(roles || []);
       console.log('AuthService: Roles cargados exitosamente desde la API:', roles);
 
@@ -113,7 +125,7 @@ private async loadUserProfileAndRoles(): Promise<void> {
       console.error('AuthService: Fallo en el proceso de carga de roles.', error);
       this.userRoles.set([]);
     }
-}
+  }
 
   // Asegúrate de que tu método decodeTokenPayload siga aquí
   private decodeTokenPayload(token: string): any {
@@ -145,9 +157,9 @@ private async loadUserProfileAndRoles(): Promise<void> {
    * @param roleIdentifier El nombre o GUID del rol a verificar.
    * @returns `true` si el usuario tiene el rol, `false` en caso contrario.
    */
-public hasRole(roleIdentifier: string): boolean {
-  const roles = this.userRoles();
-  // ¡Ya comprueba tanto el 'name' como el 'guid'!
-  return roles.some(role => role.name === roleIdentifier || role.guid === roleIdentifier);
-}
+  public hasRole(roleIdentifier: string): boolean {
+    const roles = this.userRoles();
+    // ¡Ya comprueba tanto el 'name' como el 'guid'!
+    return roles.some(role => role.name === roleIdentifier || role.guid === roleIdentifier);
+  }
 }

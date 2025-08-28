@@ -1,7 +1,11 @@
-import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnInit, OnDestroy, inject, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+import { AuthService } from '../../../services/auth.service';
+
+// Importar el AuthService y GroupAD (descomenta cuando tengas el import correcto)
+// import { AuthService, GroupAD } from '../../services/auth.service';
 
 export interface User {
   id: string;
@@ -21,29 +25,77 @@ export interface User {
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   @Input() pageTitle = 'Portal de Microservicios';
-  @Input() bankName = 'BANCO PATAGONIA'; // Nombre del banco configurable
-  @Input() logoPath = 'assets/images/logo_sin_claim_horizontal_2-removebg-preview.png'; // Ruta del logo configurable
+  @Input() bankName = 'BANCO PATAGONIA';
+  @Input() logoPath = 'assets/images/logo_sin_claim_horizontal_2-removebg-preview.png';
   
   @Output() logout = new EventEmitter<void>();
 
   currentUser: User | null = null;
   
   private router = inject(Router);
+  // Hacer AuthService opcional - descomenta cuando tengas el import
+  private authService = inject(AuthService, { optional: true });
+  //private authService: any = null; // Temporal
   private subscriptions = new Subscription();
 
   constructor() {}
 
   ngOnInit(): void {
     this.initializeUser();
+    this.setupAuthEffects();
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
+  private setupAuthEffects(): void {
+    // Solo configurar effects si AuthService está disponible
+    if (this.authService) {
+      // Effect para el perfil del usuario
+      effect(() => {
+        const auth = this.authService;
+        if (!auth) return;
+        const profile = auth.userProfile();
+        if (profile) {
+          this.updateUserFromProfile(profile);
+        }
+      });
+
+      // Effect para los roles del usuario
+      effect(() => {
+        const auth = this.authService;
+        if (!auth) return;
+        const roles = auth.userRoles();
+        if (this.currentUser && roles.length > 0) {
+          this.currentUser = {
+            ...this.currentUser,
+            role: roles[0]?.name || 'Usuario'
+          };
+        }
+      });
+    }
+  }
+
   private initializeUser(): void {
-    // En un escenario real, esto vendría de un servicio de autenticación
-    if (!this.currentUser) {
+    if (this.authService) {
+      // Para signals, accedemos directamente al valor actual
+      const profile = this.authService.userProfile();
+      const roles = this.authService.userRoles();
+      
+      if (profile) {
+        this.updateUserFromProfile(profile);
+        
+        // Si hay roles disponibles, usar el primero
+        if (roles.length > 0) {
+          this.currentUser = {
+            ...this.currentUser!,
+            role: roles[0]?.name || 'Usuario'
+          };
+        }
+      }
+    } else {
+      // Fallback para desarrollo sin AuthService
       this.currentUser = {
         id: 'USR001',
         name: 'Luis Ruiz',
@@ -55,9 +107,24 @@ export class HeaderComponent implements OnInit, OnDestroy {
     }
   }
 
+  private updateUserFromProfile(profile: any): void {
+    this.currentUser = {
+      id: profile.userId || profile.sub || 'USR001',
+      name: profile.family_name || profile.name || 'Usuario',
+      email: profile.email || '',
+      role: this.currentUser?.role || 'Usuario',
+      department: 'Tecnología',
+      lastLogin: new Date()
+    };
+  }
+
   onLogout(): void {
-    // Limpiar datos de sesión
-    this.clearUserSession();
+    // Usar AuthService si está disponible, sino lógica por defecto
+    if (this.authService) {
+      this.authService.logout();
+    } else {
+      this.clearUserSession();
+    }
     
     // Emitir evento de logout
     this.logout.emit();
@@ -70,14 +137,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   private clearUserSession(): void {
     try {
-      // Limpiar localStorage
       localStorage.removeItem('auth-token');
       localStorage.removeItem('user-preferences');
       localStorage.removeItem('session-data');
-      
-      // Limpiar sessionStorage si es necesario
       sessionStorage.clear();
-      
       console.log('Sesión limpiada correctamente');
     } catch (error) {
       console.error('Error al limpiar la sesión:', error);
