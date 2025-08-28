@@ -25,7 +25,6 @@ export interface User {
 })
 export class HeaderComponent implements OnInit, OnDestroy {
   @Input() pageTitle = 'Portal de Microservicios';
-  @Input() bankName = 'BANCO PATAGONIA';
   @Input() logoPath = 'assets/images/logo_sin_claim_horizontal_2-removebg-preview.png';
   
   @Output() logout = new EventEmitter<void>();

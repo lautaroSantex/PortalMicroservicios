@@ -20,7 +20,6 @@ import { HeaderComponent } from './shared/components/header/header.component';
       <!-- Header mejorado -->
 <app-header 
   [pageTitle]="'Portal de Microservicios'"
-  [bankName]="'BPN'"
   [logoPath]="'assets/imagenes/logo_sin_claim_horizontal_2-removebg-preview.png'"
   (logout)="handleLogout()">
 </app-header>

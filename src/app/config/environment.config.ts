@@ -7,7 +7,7 @@ export interface EnvironmentConfig {
   key: Environment;
   color: string;
   badgeClass: string;
-  iconClass: string;
+  // iconClass: string;
 }
 
 export const ENVIRONMENTS: EnvironmentConfig[] = [
@@ -16,14 +16,14 @@ export const ENVIRONMENTS: EnvironmentConfig[] = [
     key: 'qa',
     color: '#f59e0b',
     badgeClass: 'bg-yellow-100 text-yellow-800 border-yellow-300',
-    iconClass: 'bg-yellow-100'
+    // iconClass: 'bg-yellow-100'
   },
   {
     name: 'Producción',
     key: 'prod',
     color: '#ef4444',
     badgeClass: 'bg-red-100 text-red-800 border-red-300',
-    iconClass: 'bg-red-100'
+    // iconClass: 'bg-red-100'
   }
 ];
 

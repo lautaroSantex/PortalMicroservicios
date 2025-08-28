@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
   template: `
     <div class="welcome-container">
       <div class="content">
-        <h1>Portal de Microservicios BPN</h1>
+        <h1>Portal de Microservicios</h1>
         <p>Cargando...</p>
       </div>
     </div>

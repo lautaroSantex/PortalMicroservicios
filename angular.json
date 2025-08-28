@@ -35,6 +35,11 @@
                 "input": "public"
               },
               {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "/assets"
+              },
+              {
                 "glob": "silent-refresh.html",
                 "input": "src",
                 "output": "/"
@@ -103,6 +108,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "**/*",
+                "input": "src/assets",
+                "output": "/assets"
               },
               {
                 "glob": "silent-refresh.html",

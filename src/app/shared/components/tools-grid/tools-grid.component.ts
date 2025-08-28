@@ -27,7 +27,6 @@ import { AuthService } from '../../../services/auth.service';
                   'ring-2 ring-offset-2 ring-blue-500 ' + env.badgeClass : 
                   'bg-gray-100 text-gray-600 hover:bg-gray-200'"
                 class="px-4 py-2 rounded-lg font-medium transition-all duration-200 border">
-                <span class="mr-2">{{ getEnvironmentIcon(env.key) }}</span>
                 {{ env.name }}
               </button>
             </div>
