@@ -306,6 +306,11 @@ export class ProjectService {
     return recent ? JSON.parse(recent) : [];
   }
 
+  clearRecent(): void {
+  localStorage.removeItem('recentProjects');
+}
+  
+
   /**
    * Agrega un proyecto a los recientes
    */

@@ -12,7 +12,6 @@ export const routes: Routes = [
     pathMatch: 'full'
  },
  
- // --- 2. AÑADIMOS LA RUTA PÚBLICA DE BIENVENIDA ---
  {
     path: 'welcome',
     component: WelcomeComponent,
@@ -83,7 +82,6 @@ export const routes: Routes = [
     ]
  },
  
- // Ruta wildcard - debe ser la última
  {
     path: '**',
     redirectTo: 'projects'
