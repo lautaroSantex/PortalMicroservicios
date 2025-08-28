@@ -11,121 +11,77 @@ import { Project } from '../../../models/project.model';
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <div class="min-h-screen bg-gray-50">
-      <!-- Navigation Bar -->
-      <nav class="bg-white shadow-md sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4">
-          <div class="flex justify-between items-center h-16">
-            <!-- Left side -->
-            <div class="flex items-center space-x-4">
-              <button 
-                (click)="goBack()"
-                class="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-                aria-label="Volver a proyectos">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
-                        d="M15 19l-7-7 7-7"></path>
-                </svg>
-              </button>
-              
-              <div class="flex items-center space-x-3">
-                <span class="text-2xl">{{ currentProject?.icon }}</span>
-                <div>
-                  <h1 class="text-xl font-bold text-gray-900">{{ currentProject?.name }}</h1>
-                  <p class="text-sm text-gray-500">{{ currentProject?.description }}</p>
-                </div>
-              </div>
+    <div class="max-w-7xl mx-auto px-4 py-8">
+      <!-- Breadcrumb -->
+      <nav class="flex mb-6" aria-label="Breadcrumb">
+        <ol class="inline-flex items-center space-x-1 md:space-x-3">
+          <li class="inline-flex items-center">
+            <a routerLink="/projects" 
+               class="text-gray-700 hover:text-blue-600 inline-flex items-center">
+              <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
+              </svg>
+              Proyectos
+            </a>
+          </li>
+          <li>
+            <div class="flex items-center">
+              <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"></path>
+              </svg>
+              <span class="ml-1 text-gray-700 font-medium flex items-center">
+                <span class="mr-2">{{ currentProject?.icon }}</span>
+                {{ currentProject?.name }}
+              </span>
             </div>
-
-            <!-- Right side - Quick Actions -->
-            <div class="flex items-center space-x-4">              
-              <button 
-                (click)="changeProject()"
-                class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                Cambiar Proyecto
-              </button>
+          </li>
+          <li *ngIf="currentRoute !== 'tools'">
+            <div class="flex items-center">
+              <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"></path>
+              </svg>
+              <span class="ml-1 text-gray-700">{{ getCurrentToolName() }}</span>
             </div>
-          </div>
-        </div>
+          </li>
+        </ol>
       </nav>
 
-      <!-- Breadcrumb -->
-      <div class="bg-white border-b">
-        <div class="max-w-7xl mx-auto px-4 py-3">
-          <nav class="flex" aria-label="Breadcrumb">
-            <ol class="inline-flex items-center space-x-1 md:space-x-3">
-              <li class="inline-flex items-center">
-                <a routerLink="/projects" 
-                   class="text-gray-700 hover:text-blue-600 inline-flex items-center">
-                  <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z"></path>
-                  </svg>
-                  Proyectos
-                </a>
-              </li>
-              <li>
-                <div class="flex items-center">
-                  <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"></path>
-                  </svg>
-                  <span class="ml-1 text-gray-700 font-medium">{{ currentProject?.name }}</span>
-                </div>
-              </li>
-              <li *ngIf="currentRoute !== 'tools'">
-                <div class="flex items-center">
-                  <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"></path>
-                  </svg>
-                  <span class="ml-1 text-gray-700">{{ getCurrentToolName() }}</span>
-                </div>
-              </li>
-            </ol>
-          </nav>
-        </div>
-      </div>
-
-      <!-- Main Content Area -->
-      <div class="max-w-7xl mx-auto px-4 py-8">
-        <!-- TABS NAVIGATION - COMENTADO POR AHORA -->
-        <!-- Solo mostramos el título de Herramientas sin tabs -->
-        <div class="mb-6">
-          <h2 class="text-2xl font-bold text-gray-900 flex items-center">
-            <span class="mr-2">🔧</span>
-            Herramientas Disponibles
-          </h2>
-        </div>
-        
-        <!-- Tabs completos comentados para uso futuro -->
-        <!--
-        <div class="bg-white rounded-lg shadow mb-6">
-          <div class="border-b border-gray-200">
-            <nav class="-mb-px flex space-x-8 px-6" aria-label="Tabs">
-              <button
-                *ngFor="let tab of tabs"
-                (click)="navigateToTab(tab.route)"
-                [class.border-blue-500]="isActiveTab(tab.route)"
-                [class.text-blue-600]="isActiveTab(tab.route)"
-                [class.border-transparent]="!isActiveTab(tab.route)"
-                [class.text-gray-500]="!isActiveTab(tab.route)"
-                class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm
-                       hover:text-gray-700 hover:border-gray-300 transition-colors">
-                <span class="mr-2">{{ tab.icon }}</span>
-                {{ tab.name }}
-                <span *ngIf="tab.badge" 
-                      class="ml-2 px-2 py-1 text-xs rounded-full bg-blue-100 text-blue-600">
-                  {{ tab.badge }}
-                </span>
-              </button>
-            </nav>
+      <!-- Project Info Card -->
+      <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center text-2xl">
+              {{ currentProject?.icon }}
+            </div>
+            <div>
+              <h1 class="text-2xl font-bold text-gray-900">{{ currentProject?.name }}</h1>
+              <p class="text-gray-600">{{ currentProject?.description }}</p>
+            </div>
           </div>
+          <button 
+            (click)="changeProject()"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+            Cambiar Proyecto
+          </button>
         </div>
-        -->
-
-        <!-- Router Outlet for Child Components -->
-        <router-outlet></router-outlet>
+      </div>
+      
+      <!-- Tools Section Title -->
+      <div class="mb-6">
+        <h2 class="text-2xl font-bold text-gray-900 flex items-center">
+          <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          </svg>
+          Herramientas Disponibles
+        </h2>
       </div>
 
-      <!-- Floating Action Button (opcional) -->
+      <!-- Router Outlet for Child Components -->
+      <router-outlet></router-outlet>
+
+      <!-- Floating Action Button -->
       <div class="fixed bottom-8 right-8">
         <button 
           (click)="toggleQuickMenu()"
@@ -140,7 +96,7 @@ import { Project } from '../../../models/project.model';
 
         <!-- Quick Menu -->
         <div *ngIf="showQuickMenu" 
-             class="absolute bottom-16 right-0 bg-white rounded-lg shadow-xl p-2 min-w-[200px]">
+             class="absolute bottom-16 right-0 bg-white rounded-lg shadow-xl p-2 min-w-[200px] z-50">
           <button 
             *ngFor="let tool of availableTools"
             (click)="quickNavigate(tool.route)"
