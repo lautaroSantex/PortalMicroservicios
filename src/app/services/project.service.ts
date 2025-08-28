@@ -2,6 +2,8 @@ import { inject, Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Project, Tool } from '../models/project.model';
 import { AuthService } from './auth.service';
+import { APP_ROLES } from '../config/app-roles.config'; 
+
 
 @Injectable({
   providedIn: 'root'
@@ -24,38 +26,45 @@ export class ProjectService {
           url: 'http://apilink-grafana.com:3000',
           description: 'Dashboard de monitoreo ApiLink',
           category: 'monitoring',
-          requiredGroup: 'Acceso VPN Tech'
+          requiredGroup: APP_ROLES.ACCESO_VPN_TECH
         },
         consul: {
           name: 'Consul',
           url: 'http://10.172.13.72:8500/ui/dc1/services/ApiLink/instances',
           description: 'Service discovery ApiLink',
           category: 'infrastructure',
-          requiredGroup: 'Acceso VPN Tech'
+          requiredGroup: APP_ROLES.ACCESO_VPN_TECH
         },
         vault: {
           name: 'Vault',
           url: 'http://10.172.13.76:8200',
           description: 'Gestión de secretos ApiLink',
-          category: 'security'
+          category: 'security',
+          requiredGroup: APP_ROLES.ROL_SUPER_SECRETO_INEXISTENTE
         },
         healthCheck: {
           name: 'Health Check',
           url: 'http://10.172.13.71:7209/health-ui',
           description: 'Health Check ApiLink',
-          category: 'monitoring'
+          category: 'monitoring',
+          requiredGroup: APP_ROLES.ACCESO_VPN_TECH
+
         },
         kubernetes: {
           name: 'Kubernetes Dashboard',
           url: 'http://10.172.13.33/',
           description: 'Cluster Kubernetes ApiLink',
-          category: 'infrastructure'
+          category: 'infrastructure',
+          requiredGroup: APP_ROLES.ROL_SUPER_SECRETO_INEXISTENTE
+
         },
         portalLink: {
           name: 'Portal Link',
           url: 'http://10.172.13.77',
           description: 'Portal Link Application',
-          category: 'application'
+          category: 'application',
+          requiredGroup: APP_ROLES.ACCESO_VPN_TECH
+
         }
       },
       metrics: {

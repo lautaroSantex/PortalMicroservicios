@@ -145,8 +145,9 @@ private async loadUserProfileAndRoles(): Promise<void> {
    * @param roleIdentifier El nombre o GUID del rol a verificar.
    * @returns `true` si el usuario tiene el rol, `false` en caso contrario.
    */
-  public hasRole(roleIdentifier: string): boolean {
-    const roles = this.userRoles();
-    return roles.some(role => role.name === roleIdentifier || role.guid === roleIdentifier);
-  }
+public hasRole(roleIdentifier: string): boolean {
+  const roles = this.userRoles();
+  // ¡Ya comprueba tanto el 'name' como el 'guid'!
+  return roles.some(role => role.name === roleIdentifier || role.guid === roleIdentifier);
+}
 }

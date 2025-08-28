@@ -6,6 +6,7 @@ import { Project, Tool } from '../../../models/project.model';
 import { ProjectService } from '../../../services/project.service';
 import { EnvironmentService } from '../../../services/environment.service';
 import { Environment, EnvironmentConfig } from '../../../config/environment.config';
+import { AuthService } from '../../../services/auth.service';
 
 @Component({
   selector: 'app-tools-grid',
@@ -187,7 +188,8 @@ export class ToolsGridComponent implements OnInit, OnDestroy {
     private router: Router,
     private route: ActivatedRoute,
     private projectService: ProjectService,
-    private environmentService: EnvironmentService
+    private environmentService: EnvironmentService,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
@@ -213,15 +215,22 @@ export class ToolsGridComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  private loadProject(projectId: string): void {
+private loadProject(projectId: string): void {
     this.currentProject = this.projectService.getProjectById(projectId);
     
     if (this.currentProject) {
-      // Convertir tools object a array para facilitar el manejo
-      this.tools = Object.entries(this.currentProject.tools).map(([key, value]) => ({
-        key,
-        value
-      }));
+      // Convertimos el objeto de herramientas a un array
+      this.tools = Object.entries(this.currentProject.tools)
+        .map(([key, value]) => ({ key, value }))
+        // --- PASO 3: ¡AÑADIMOS EL FILTRADO POR ROL AQUÍ! ---
+        .filter(tool => {
+          // Si la herramienta no especifica un 'requiredGroup', se muestra.
+          if (!tool.value.requiredGroup) {
+            return true;
+          }
+          // Si lo especifica, usamos nuestro AuthService para verificar el permiso.
+          return this.authService.hasRole(tool.value.requiredGroup);
+        });
     }
   }
 
