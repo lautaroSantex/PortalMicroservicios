@@ -81,7 +81,6 @@ export class AuthService {
 
 
   private async loadUserProfileAndRoles(): Promise<void> {
-    // Para este flujo, el id_token puede no estar presente o ser limitado.
     this.userProfile.set(this.oauthService.getIdentityClaims());
     console.log('AuthService: Claims (si existen):', this.userProfile());
 
